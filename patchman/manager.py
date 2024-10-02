@@ -83,7 +83,7 @@ class PatchManager:
         """
         patch_file_path = self._to_path(name)
         if not os.path.exists(patch_file_path):
-            raise FileNotFoundError(f"No such patch: {patch_file_path}")
+            raise FileNotFoundError(f"No such patch: {name}")
 
         # Prepare the git apply command
         command = ["apply"]
@@ -92,6 +92,24 @@ class PatchManager:
         command.append(patch_file_path)
 
         self.__execute_git_command(command)
+
+    def diff(self, name: str, revert: bool = False):
+        """
+        Print a patch's diff with the given name.
+
+        Args:
+            name (str): The name of the patch file (without extension).
+
+        Raises:
+            FileNotFoundError: If the specified patch file does not exist.
+            ValueError: If the Git command fails.
+        """
+        patch_file_path = self._to_path(name)
+        if not os.path.exists(patch_file_path):
+            raise FileNotFoundError(f"No such patch: {name}")
+
+        with open(patch_file_path, "r") as patch_file:
+            print(''.join(patch_file.readlines()))
 
     def __execute_git_command(self, cmd) -> (str, str):
         try:

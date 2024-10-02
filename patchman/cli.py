@@ -49,15 +49,19 @@ def create_parser():
         help="Revert the patch instead of applying it"
     )
 
+    show_parser = subparsers.add_parser("show", help="View a patch diff")
+    show_parser.add_argument("name", nargs='?', default='', type=str,
+                             help="Name of the patch to show")
+
     return parser
 
 
-if __name__ == "__main__":
+def main():
     parser = create_parser()
     args = parser.parse_args()
-    print(args)
     manager = PatchManager()
     tui = PatchTUI()
+    # test
 
     if args.command == "add":
         manager.add(args.name, args.commit, args.from_changes)
@@ -69,3 +73,11 @@ if __name__ == "__main__":
         if not args.name:
             args.name = tui.select_patch(manager.list())
         manager.apply(args.name, args.reverse)
+    elif args.command == "show":
+        if not args.name:
+            args.name = tui.select_patch(manager.list())
+        manager.diff(args.name)
+
+
+if __name__ == "__main__":
+    main()
