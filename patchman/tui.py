@@ -1,4 +1,3 @@
-import os
 import pytermgui as ptg
 from pytermgui import boxes, HorizontalAlignment
 
