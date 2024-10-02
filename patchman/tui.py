@@ -16,11 +16,11 @@ class PatchTUI:
     def __init__(self):
         self.selected_patch = None
 
-    def select_patch(self):
-        dirs = os.listdir()
-        button_container = ptg.Container(*self._buttons(dirs), box=boxes.EMPTY)
+    def select_patch(self, patches):
+        button_container = ptg.Container(
+            *self._buttons(patches), box=boxes.EMPTY)
         container = ptg.Container(
-            self._search_input(dirs, button_container),
+            self._search_input(patches, button_container),
             button_container,
             box=boxes.EMPTY,
             parent_align=HorizontalAlignment.LEFT
