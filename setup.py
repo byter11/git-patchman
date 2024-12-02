@@ -23,7 +23,7 @@ def find_requirements():
 
 
 def find_version():
-    with open(project_path / 'git_graph' / '__init__.py',
+    with open(project_path / 'patchman' / '__init__.py',
               encoding='utf-8') as version_file:
         pattern = '^__version__ = [\'\"]([^\'\"]*)[\'\"]'
         match = re.search(pattern, version_file.readline().strip())
