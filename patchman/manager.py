@@ -1,6 +1,5 @@
 import os
 import subprocess
-from patchman.tui import PatchTUI
 
 
 class PatchManager:
@@ -14,7 +13,6 @@ class PatchManager:
         """
         self.repo_path = os.path.abspath(repo_path)
         self.patch_dir = os.path.join(self.repo_path, ".git", "patchman")
-        self.tui = PatchTUI()
         os.makedirs(self.patch_dir, exist_ok=True)
 
     def list(self):
@@ -51,6 +49,26 @@ class PatchManager:
         with open(patch_file_path, "w") as patch_file:
             patch_file.write(result)
 
+    def rename(self, old_name: str, new_name: str):
+        """
+        Rename a patch file.
+
+        Args:
+            old_name (str): The current name of the patch file (without extension).
+            new_name (str): The new name for the patch file (without extension).
+
+        Raises:
+            FileNotFoundError: If the original patch file does not exist.
+            FileExistsError: If a patch with the new name already exists.
+        """
+        old_path = self._to_path(old_name)
+        new_path = self._to_path(new_name)
+        if not os.path.exists(old_path):
+            raise FileNotFoundError(f"No such patch: {old_name}")
+        if os.path.exists(new_path):
+            raise FileExistsError(f"Patch with name '{new_name}' already exists.")
+        os.rename(old_path, new_path)
+
     def delete(self, name: str):
         """
         Delete a patch file with the given name.
@@ -64,7 +82,6 @@ class PatchManager:
         patch_file_path = os.path.join(self.patch_dir, f"{name}.patch")
         if os.path.exists(patch_file_path):
             os.remove(patch_file_path)
-            print(name)
         else:
             raise FileNotFoundError(f"No such patch: {name}")
 
@@ -108,8 +125,24 @@ class PatchManager:
         if not os.path.exists(patch_file_path):
             raise FileNotFoundError(f"No such patch: {name}")
 
-        with open(patch_file_path, "r") as patch_file:
-            print(''.join(patch_file.readlines()))
+        subprocess.run(["less", patch_file_path], check=True)
+
+    def edit(self, name: str):
+        """
+        Open the patch file in vim for editing.
+
+        Args:
+            name (str): The name of the patch file (without extension).
+
+        Raises:
+            FileNotFoundError: If the specified patch file does not exist.
+            subprocess.CalledProcessError: If vim fails to open the file.
+        """
+        patch_file_path = self._to_path(name)
+        if not os.path.exists(patch_file_path):
+            raise FileNotFoundError(f"No such patch: {name}")
+        
+        subprocess.run(["vim", patch_file_path], check=True)
 
     def __execute_git_command(self, cmd) -> (str, str):
         try:

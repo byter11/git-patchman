@@ -19,7 +19,7 @@ def create_parser():
     parser.add_argument('-V', '--version', action='version',
                         version=__version__)
 
-    subparsers = parser.add_subparsers(dest="command", required=True,
+    subparsers = parser.add_subparsers(dest="command", required=False,
                                        help="Available commands")
 
     # 'add' command
@@ -77,6 +77,8 @@ def main():
         if not args.name:
             args.name = tui.select_patch(manager.list())
         manager.diff(args.name)
+    else:
+        tui.manage()
 
 
 if __name__ == "__main__":
